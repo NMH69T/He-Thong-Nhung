@@ -8,17 +8,24 @@
 #include "freertos/queue.h"
 #include "freertos/timers.h"
 
+int cnt = 0;
 int cnt_0 = 0;
 int cnt_1 = 0;
 
 void func_CallBack(TimerHandle_t xTimer)
 {
    const char *str;
-   str = pcTimerGetTimerName(xTimer);
+   str = pcTimerGetTimerName(xTimer);   
+   
 
    int Timer_ID = (int) pvTimerGetTimerID(xTimer);
 
    if (Timer_ID == 0)
+   {
+      printf("Count: %d       ",++cnt);
+   }
+
+   if (Timer_ID == 1)
    {
       printf("%s _ %d\n",str,++cnt_0);
       if (cnt_0 == 10)
@@ -27,7 +34,7 @@ void func_CallBack(TimerHandle_t xTimer)
          printf("Timer 1 stopped\n");
       }
    }
-   else if (Timer_ID == 1)
+   if (Timer_ID == 2)
    {
       printf("==========|| %s _ %d\n",str,++cnt_1);
       if (cnt_1 == 5)
@@ -37,13 +44,17 @@ void func_CallBack(TimerHandle_t xTimer)
 
       }
    }
+   printf("\n");
 }
 
 void app_main()
 {
-   TaskHandle_t Timer_1 = xTimerCreate("ahihi", pdMS_TO_TICKS(2000),pdTRUE,(void *) 0 , func_CallBack);
-   TaskHandle_t Timer_2 = xTimerCreate("ihaha", pdMS_TO_TICKS(3000),pdTRUE,(void *) 1 , func_CallBack);
+   TaskHandle_t Timer_1 = xTimerCreate("ahihi", pdMS_TO_TICKS(2000),pdTRUE,(void *) 1 , func_CallBack);
+   TaskHandle_t Timer_2 = xTimerCreate("ihaha", pdMS_TO_TICKS(3000),pdTRUE,(void *) 2 , func_CallBack);
+   TaskHandle_t Timer_3 = xTimerCreate("Count", pdMS_TO_TICKS(1000),pdTRUE,(void *) 0 , func_CallBack);
 
    xTimerStart(Timer_1, 0);
    xTimerStart(Timer_2, 0);
+   xTimerStart(Timer_3, 0);
+
 }
