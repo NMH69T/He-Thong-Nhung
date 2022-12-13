@@ -8,53 +8,44 @@
 #include "freertos/queue.h"
 #include "freertos/timers.h"
 
-int cnt = 0;
 int cnt_0 = 0;
 int cnt_1 = 0;
 
+TimerHandle_t Timer_1;
+TimerHandle_t Timer_2;
+
 void func_CallBack(TimerHandle_t xTimer)
 {
-   const char *str;
-   str = pcTimerGetTimerName(xTimer);   
-   
+    TickType_t time = xTaskGetTickCount() / 1000;
 
-   int Timer_ID = (int) pvTimerGetTimerID(xTimer);
-
-   if (Timer_ID == 0)
-   {
-      printf("Count: %d       ",++cnt);
-   }
-
-   if (Timer_ID == 1)
-   {
-      printf("%s _ %d\n",str,++cnt_0);
-      if (cnt_0 == 10)
-      {
-         xTimerStop(xTimer, 0);
-         printf("Timer 1 stopped\n");
-      }
-   }
-   if (Timer_ID == 2)
-   {
-      printf("==========|| %s _ %d\n",str,++cnt_1);
-      if (cnt_1 == 5)
-      {
-         xTimerStop(xTimer, 0);
-         printf("==========|| Timer 2 stopped\n");
-
-      }
-   }
-   printf("\n");
+    if (xTimer == Timer_1)
+    {
+        cnt_0++;
+        printf("At %ds: ahihi call %d times", time, cnt_0);
+        if (cnt_0 >= 10)
+        {
+            xTimerStop(xTimer, 0);
+            printf(" ===> ahihi stops");
+        }
+    }
+    if (xTimer == Timer_2)
+    {
+        cnt_1++;
+        printf("At %ds: ihaha call %d times", time, cnt_1);
+        if (cnt_1 >= 5)
+        {
+            xTimerStop(xTimer, 0);
+            printf(" ===> ihaha stops");
+        }
+    }
+    printf("\n");
 }
 
 void app_main()
 {
-   TaskHandle_t Timer_1 = xTimerCreate("ahihi", pdMS_TO_TICKS(2000),pdTRUE,(void *) 1 , func_CallBack);
-   TaskHandle_t Timer_2 = xTimerCreate("ihaha", pdMS_TO_TICKS(3000),pdTRUE,(void *) 2 , func_CallBack);
-   TaskHandle_t Timer_3 = xTimerCreate("Count", pdMS_TO_TICKS(1000),pdTRUE,(void *) 0 , func_CallBack);
+    Timer_1 = xTimerCreate("AHIHI", pdMS_TO_TICKS(2000), pdTRUE, 0, func_CallBack);
+    Timer_2 = xTimerCreate("IHAHA", pdMS_TO_TICKS(3000), pdTRUE, 1, func_CallBack);
 
-   xTimerStart(Timer_1, 0);
-   xTimerStart(Timer_2, 0);
-   xTimerStart(Timer_3, 0);
-
+    xTimerStart(Timer_1, 0);
+    xTimerStart(Timer_2, 0);
 }
