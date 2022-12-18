@@ -16,7 +16,7 @@ TimerHandle_t Timer_2;
 
 void func_CallBack(TimerHandle_t xTimer)
 {
-    TickType_t time = xTaskGetTickCount() / 1000;
+    TickType_t time = pdTICKS_TO_MS(xTaskGetTickCount()) / 1000;
 
     if (xTimer == Timer_1)
     {
